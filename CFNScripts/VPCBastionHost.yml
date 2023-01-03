@@ -1,0 +1,111 @@
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  Owner:
+    Description: Id of Owner
+    Type: String
+    MinLength: '3'
+    AllowedPattern: '[a-z0-9].[a-z0-9]'
+  VPCCidrBlock:
+    Description: CIDR Block of VPC
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.0.0/16
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PublicSubnetACidr:
+    Description: CIDR Block of Public Subnet A
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.0.0/24
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PrivateSubnetACidr:
+    Description: CIDR Block of Private Subnet A
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.16.0/20
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PublicSubnetBCidr:
+    Description: CIDR Block of Public Subnet B
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.1.0/24
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PrivateSubnetBCidr:
+    Description: CIDR Block of Private Subnet B
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.32.0/20
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+Tags: 
+  - Key: owner
+    Value: !Ref Owner
+  - Key: "keyname2"
+    Value: "value2"
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidrBlock # Required
+      Tags:
+       Tags
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: 
+        Fn::Select: 
+          - 0
+          - Fn::GetAZs: ""
+      CidrBlock: !Ref PublicSubnetACidr
+      Tags:
+          Tags
+        VpcId: !GetAtt VPC.VpcId # Required
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: 
+        Fn::Select: 
+          - 0
+          - Fn::GetAZs: ""
+      CidrBlock: !Ref PrivateSubnetACidr
+      Tags:
+          Tags
+        VpcId: !GetAtt VPC.VpcId # Required
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: 
+        Fn::Select: 
+          - 1
+          - Fn::GetAZs: ""
+      CidrBlock: !Ref PublicSubnetBCidr
+      Tags:
+          Tags
+        VpcId: !GetAtt VPC.VpcId # Required
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: 
+        Fn::Select: 
+          - 1
+          - Fn::GetAZs: ""
+      CidrBlock: !Ref PrivateSubnetBCidr
+      Tags:
+          Tags
+        VpcId: !GetAtt VPC.VpcId # Required
+  
